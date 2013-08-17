@@ -6,25 +6,38 @@ import threading
 import signal
 import logging
 import sys
+import os
 from os import environ
+import time
 
 from twisted.internet import reactor
 import tornado.ioloop
-import tornado.web
+from  tornado import web
 import tornado.websocket
 from leapcast.environment import parse_cmd
 from leapcast.apps.default import *
 from leapcast.services.rest import *
-from leapcast.services.ssdp import LeapUPNPServer
+from leapcast.services.ssdp import StartLeapUPNPServer
 from leapcast.services.websocket import *
+from leapcast.services.upnp import MediaRenderer, SSDPHandler, AvTransportService, EventHandler
 
 logger = logging.getLogger('Leapcast')
 
 class HTTPThread(object):
     def run(self):
-        self.application = tornado.web.Application([
+        self.application = web.Application([
             (r"/ssdp/device-desc.xml", DeviceHandler),
             (r"/apps", DeviceHandler),
+            
+            (r"/mr/ssdp.xml", MediaRenderer),
+            (r"/mr/icon-48.png", MediaRenderer),
+            
+            (r"/mr/avt/control", AvTransportService),
+            (r"/mr/avt/event", EventHandler),
+            (r"/mr/avt/scpd", SSDPHandler),
+            
+            (r"/mr/cm/scpd", SSDPHandler),
+            (r"/mr/rc/scpd", SSDPHandler),
 
             self.register_app(ChromeCast),
             self.register_app(YouTube),
@@ -40,7 +53,7 @@ class HTTPThread(object):
             (r"/receiver/([^\/]+)", ReceiverChannel),
             (r"/session/([^\/]+)", ApplicationChannel),
             (r"/system/control", CastPlatform),
-        ])
+        ], debug=True)
         self.application.listen(8008)
         tornado.ioloop.IOLoop.instance().start()
 
@@ -75,8 +88,8 @@ def main():
     server.start()
     signal.signal(signal.SIGTERM, server.sig_handler)
     signal.signal(signal.SIGINT, server.sig_handler)
-
-    reactor.callWhenRunning(LeapUPNPServer)
+    
+    reactor.callWhenRunning(StartLeapUPNPServer)
     reactor.run()
 
 

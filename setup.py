@@ -27,6 +27,12 @@ setup(
         'setuptools',
         'twisted',
         'tornado',
+        'tornadows',
+        'vlcclient'
+    ],
+    dependency_links = [
+        'https://github.com/downloads/rancavil/tornado-webservices/tornadows-0.9.4.2-Beta.tar.gz#egg=tornadows',
+        'https://github.com/derflocki/py-vlcclient/tarball/master#egg=vlcclient'
     ],
     entry_points={
         'console_scripts': [

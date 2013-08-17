@@ -12,11 +12,11 @@ class Environment(object):
     friendlyName = 'leapcast'
     user_agent = 'Mozilla/5.0 (CrKey - 0.9.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1573.2 Safari/537.36'
     chrome = '/usr/bin/chromium-browser'
-    fullscreen = False
+    vlc = '/usr/bin/cvlc'
+    fullscreen = True
     interface = None
     uuid = None
     verbosity = logging.INFO
-
 
 def parse_cmd():
     parser = argparse.ArgumentParser()
@@ -25,8 +25,9 @@ def parse_cmd():
     parser.add_argument('--name', help='Friendly name for this device')
     parser.add_argument('--user_agent', help='Custom user agent')
     parser.add_argument('--chrome', help='Path to Google Chrome executable')
+    parser.add_argument('--vlc', help='Path to VLC executable')
     parser.add_argument('--fullscreen', action='store_true',
-                        default=False, help='Start in full-screen mode')
+                        default=True, help='Start in full-screen mode')
     args = parser.parse_args()
 
     if args.name:
@@ -40,6 +41,10 @@ def parse_cmd():
     if args.chrome:
         Environment.chrome = args.chrome
         logger.debug('Chrome path is %s' % args.chrome)
+
+    if args.chrome:
+        Environment.vlc = args.vlc
+        logger.debug('VLC path is %s' % args.chrome)
 
     if args.fullscreen:
         Environment.fullscreen = True
